@@ -577,7 +577,7 @@ public class MouseClickWindow extends JFrame {
 				getJSplitPane0().repaint();
 				repaint();
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				// TODO Auto-generated catch blockkk
 				e.printStackTrace();
 			}
 		}
