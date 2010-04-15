@@ -46,7 +46,7 @@ import java.awt.event.*;
 
 
 
-
+//
 //VS4E -- DO NOT REMOVE THIS LINE!
 public class MouseClickWindow extends JFrame {
 
