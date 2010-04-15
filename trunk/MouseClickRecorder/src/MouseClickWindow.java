@@ -49,7 +49,7 @@ import java.awt.event.*;
 //
 //VS4E -- DO NOT REMOVE THIS LINE!
 public class MouseClickWindow extends JFrame {
-
+	/* Hello*/
 	private static final long serialVersionUID = 1L;
 
     private static final double ProgramVerisonID = 2.0;
