@@ -12,7 +12,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.Hashtable;
 
 //added packages TODO: reduce it
 import javax.swing.JPanel;
@@ -43,16 +42,23 @@ import javax.swing.filechooser.FileFilter;
 
 //import com.sun.org.apache.xalan.internal.xsltc.runtime.Hashtable;
 import java.awt.event.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Hashtable;
+//import java.util.ArrayList;
 
 
 
-//
+
+
 //VS4E -- DO NOT REMOVE THIS LINE!
 public class MouseClickWindow extends JFrame {
-	/* Hello*/
+
 	private static final long serialVersionUID = 1L;
 
-    private static final double ProgramVerisonID = 2.0;
+    private static final double ProgramVerisonID = 1.1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.ButtonGroup buttonGroup1;
@@ -64,7 +70,22 @@ public class MouseClickWindow extends JFrame {
     private org.jdesktop.layout.GroupLayout jPanel1Layout;
     private javax.swing.JPanel jPanel3;
     private int selectMode = 0;
-    
+    private boolean newFile = true;
+   // private ClickArray array = new ClickArray();
+    private double imageHeight;
+    private double imageWidth;
+    private String imageSize;
+
+   
+
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField jTextField2;
+    private javax.swing.JTextField jTextField3;
+    private javax.swing.JTextField jTextField4;
     
    
 
@@ -96,28 +117,31 @@ public class MouseClickWindow extends JFrame {
 
 	private void initComponents() {
 		openFileDialog();
-		setTitle("Mouse Clicker" + ProgramVerisonID);
+		setTitle("Mouse Click Recorder" + ProgramVerisonID);
 		setFont(new Font("Dialog", Font.PLAIN, 12));
-		setSize(804, 401);
+		setSize(890, 400);
 		setExtendedState(Frame.MAXIMIZED_BOTH);
 		setForeground(Color.black);
 		add(getCommentField(), BorderLayout.NORTH);
-      
-		//add(getJSplitPane0(), BorderLayout.CENTER);
         add(getCenterPanel(), BorderLayout.CENTER);
         add(getBottomPanel(), BorderLayout.SOUTH);
-		setJMenuBar(getJMenuBar0());
+  		setJMenuBar(getJMenuBar0());
 	}
+    //============================================================
+   
     //============================================================
     private JPanel getCenterPanel()
     {
-        jPanel3 = new javax.swing.JPanel();
-        jPanel3.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        if(jPanel3 == null)
+        {
+            jPanel3 = new javax.swing.JPanel();
+            jPanel3.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        }
         //====
 
        // org.jdesktop.layout.GroupLayout jPanel2Layout = new org.jdesktop.layout.GroupLayout(getDetailPanel());
         //=====
-        
+       
         org.jdesktop.layout.GroupLayout jPanel3Layout = new org.jdesktop.layout.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         
@@ -126,6 +150,7 @@ public class MouseClickWindow extends JFrame {
             .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel3Layout.createSequentialGroup()
                 //optional gap maybe later
                 //.addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            //TO DO: detail Panel , For now we comment it out
                 .add(getDetailPanel(), org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(getJSplitPane0(), org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 850, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
@@ -140,10 +165,11 @@ public class MouseClickWindow extends JFrame {
             .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel3Layout.createSequentialGroup()
                
                 .add(jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                   //.add(org.jdesktop.layout.GroupLayout.LEADING, getPanel2(), org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                   .add(getDetailPanel(), org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 255, Short.MAX_VALUE)
+                   //optional gap and Detail are taken out TODO: complete the detail panel
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, getPanel2(), org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(getDetailPanel(), org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 255, Short.MAX_VALUE)
 
-                   .add(getJSplitPane0(), org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 255, Short.MAX_VALUE)
+                   .add(getJSplitPane0p(), org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 255, Short.MAX_VALUE)
                     )
                 
                 .addContainerGap()
@@ -151,10 +177,21 @@ public class MouseClickWindow extends JFrame {
         );
   
         //====
-
+        
        
         return jPanel3;
     }
+    //============================================================
+    private JSplitPane getJSplitPane0p()
+    {
+        if( jSplitPane0 == null)
+        {
+
+        jSplitPane0 = new JSplitPane();
+        }
+        return jSplitPane0;
+    }
+
     //============================================================
     private JPanel getPanel2()
     {
@@ -168,21 +205,90 @@ public class MouseClickWindow extends JFrame {
     //============================================================
     private JPanel getDetailPanel()
     {
+        if(jPanel2 ==null)
+        {
         jPanel2 = getPanel2();
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Image Details"));
+        
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jTextField1 = new javax.swing.JTextField();
+        jTextField2 = new javax.swing.JTextField();
+        jTextField3 = new javax.swing.JTextField();
+        jTextField4 = new javax.swing.JTextField();
 
+        
+
+        jLabel1.setText("Height :");
+        jLabel2.setText("Width  :");
+        jLabel3.setText("Size :");
+        jLabel4.setText("Name :");
+
+        jTextField1.setText("");
+        jTextField2.setText("");
+        jTextField3.setText("");
+        jTextField4.setText("");
+
+        jTextField1.setEditable(false);
+        jTextField2.setEditable(false);
+        jTextField3.setEditable(false);
+        jTextField4.setEditable(false);
+
+        //ToDO do it differently
+        }
         org.jdesktop.layout.GroupLayout jPanel2Layout = new org.jdesktop.layout.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
-
         //Dimension of the jpanel
+
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 150, Short.MAX_VALUE)
+
+            .add(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(jPanel2Layout.createSequentialGroup()
+                        .add(jLabel4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 70, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(jTextField1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                    .add(jPanel2Layout.createSequentialGroup()
+                        .add(jLabel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 70, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(jTextField2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                    .add(jPanel2Layout.createSequentialGroup()
+                        .add(jLabel2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 70, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(jTextField3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                    .add(jPanel2Layout.createSequentialGroup()
+                        .add(jLabel3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 70, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(jTextField4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+               // .addContainerGap(232, Short.MAX_VALUE)
+                )
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 300, Short.MAX_VALUE)
+            .add(jPanel2Layout.createSequentialGroup()
+                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(jLabel4)
+                    .add(jTextField1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .add(5, 5, 5)
+                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(jLabel1)
+                    .add(jTextField2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(jLabel2)
+                    .add(jTextField3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(jLabel3)
+                    .add(jTextField4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+               // .addContainerGap(124, Short.MAX_VALUE)
+                )
         );
+
 
         
 
@@ -193,9 +299,12 @@ public class MouseClickWindow extends JFrame {
     //============================================================================
     private JPanel getBottomPanel()
     {
+        if (jPanel1 == null )
+        {
+            jPanel1 = new javax.swing.JPanel();
+        }
+        
         buttonGroup1 = new javax.swing.ButtonGroup();
-        jPanel1 = new javax.swing.JPanel();
-
         jRadioButton2 = new javax.swing.JRadioButton();
         jRadioButton1 = new javax.swing.JRadioButton();
         jCheckBox1 = new javax.swing.JCheckBox();
@@ -211,10 +320,18 @@ public class MouseClickWindow extends JFrame {
         jCheckBox2.setText("Show Comments");
         jCheckBox3.setText("Show Image Details");
         jRadioButton1.setSelected(true);
-        //TO DO : make the jRadioButton1 call its event by default
+        //TO DO : make the jRadioButton1 call its event by default//
+       // jRadioButton1.setEnabled(true);
         jRadioButton1.doClick();
    
         jCheckBox3.setSelected(true);
+
+
+        //TODO : finish up the tasks for this buttons
+        //for now they are invisible
+        jCheckBox1.setVisible(false);
+        jCheckBox2.setVisible(false);
+        
 
         //===========
         jRadioButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -287,10 +404,22 @@ public class MouseClickWindow extends JFrame {
 					if( selectMode == 0)
                     {
                         if (!commentField.getText().isEmpty() && commenting) {
+
+                            //add it to the array
+
+                           // array.addMouseClick(directory, filename, mouseCoords.x, mouseCoords.y, commentField.getText());
+
                             saveAnnotation(directory, filename, mouseCoords.x, mouseCoords.y, commentField.getText());
                             commenting = false;
                             commentField.setText("");
                         }
+                    }
+                    else if ( selectMode == 1)
+                    {
+                        getCommentField().setSelectionStart(0);
+                        getCommentField().setSelectionEnd(getCommentField().getText().length());
+                        getCommentField().requestFocusInWindow();
+                       
                     }
                   
 				}
@@ -330,68 +459,74 @@ public class MouseClickWindow extends JFrame {
 
     }
     //=====================================================
-//    private JSplitPane getJSplitPane1() {
-//		if (jSplitPane1 == null) {
-//			jSplitPane1 = new JSplitPane();
-//			jSplitPane1.setDividerLocation(220);
-//			jSplitPane1.setRightComponent(getJSplitPane0());
-//			//jSplitPane1.setLeftComponent(getJScrollPane1());
-//		}
-//		return jSplitPane1;
-//	}
+
     //=====================================================
 	private JSplitPane getJSplitPane0() {
+       
 		if (jSplitPane0 == null) {
 			jSplitPane0 = new JSplitPane();
-			jSplitPane0.setDividerLocation(220);
-			jSplitPane0.setLeftComponent(getJScrollPane0());
-			jSplitPane0.setRightComponent(getJScrollPane1());
-		}
+           }
+        jSplitPane0.setDividerLocation(220);
+        jSplitPane0.setLeftComponent(getJScrollPane0());
+        jSplitPane0.setRightComponent(getJScrollPane1());
 		return jSplitPane0;
+        
 	}
 
     //left component
 	private JScrollPane getJScrollPane0() {
 		if (jScrollPane0 == null) {
 			jScrollPane0 = new JScrollPane();
-			jScrollPane0.setViewportView(getJTree0());
 		}
+        jScrollPane0.setViewportView(getJTree0());
 		return jScrollPane0;
 	}
     //right comonent
 	private JScrollPane getJScrollPane1() {
 		if (jScrollPane1 == null) {
 			jScrollPane1 = new JScrollPane();
-			jScrollPane1.setViewportView(getImageLabel());
+            jScrollPane1.setHorizontalScrollBarPolicy(30);
+            jScrollPane1.setVerticalScrollBarPolicy(20);
 		}
-		return jScrollPane1;
+       
+        jScrollPane1.setViewportView(getImageLabel());
+       
+       
+        return jScrollPane1;
 	}
 	
 	private JLabel getImageLabel() {
+        
 		if (imageLabel == null) {
 			imageLabel = new JLabel();
-			imageLabel.setVerticalAlignment(SwingConstants.TOP);
-			imageLabel.setAlignmentY(0.0f);
-			imageLabel.addMouseListener(new MouseAdapter() {
-	
-				public void mouseReleased(MouseEvent event) {
-					imageLabelMouseMouseReleased(event);
-				}
-			});
+
 		}
+        imageLabel.setVerticalAlignment(SwingConstants.TOP);
+		imageLabel.setAlignmentY(0.0f);
+        
+		imageLabel.addMouseListener(new MouseAdapter()
+        {
+            public void mouseReleased(MouseEvent event)
+            {
+                imageLabelMouseMouseReleased(event);
+                System.out.println("Amir");
+            } 
+		});
 		return imageLabel;
 	}	
 	
 	private JTree getJTree0() {
 		if (directoryTree0 == null) {
 			directoryTree0 = directory != null ? new JTree(directory.list(new FileDirectoryAndImageFilter())) : new JTree();
+        }
 			directoryTree0.addTreeSelectionListener(new TreeSelectionListener() {
-				
+
+
 				public void valueChanged(TreeSelectionEvent event) {
 					directoryTree0TreeSelectionValueChanged(event);
 				}
 			});
-		}
+		
 		
 		return directoryTree0;
 	}
@@ -430,13 +565,15 @@ public class MouseClickWindow extends JFrame {
 	private JMenuItem getUndoMenuItem() {
 		if (undoMenuItem == null) {
 			undoMenuItem = new JMenuItem();
+            //set it to be invisible for now TODO: 
+            undoMenuItem.setVisible(false);
 			undoMenuItem.setText("Undo");
 			undoMenuItem.setOpaque(false);
 			undoMenuItem.addActionListener(new ActionListener() {
 	            public void actionPerformed(ActionEvent e) 
 	            {
 	                System.out.println("Undo was just pressed");
-	            
+                    //TODO finish up undo
 	            
 	            
 	            
@@ -468,7 +605,9 @@ public class MouseClickWindow extends JFrame {
 			openMenuItem = new JMenuItem();
 			openMenuItem.setText("Open...");
 			openMenuItem.setOpaque(false);
+            
 			openMenuItem.addMouseListener(new MouseAdapter() {
+               
 				public void mouseReleased(MouseEvent event) {
 					openMenuItemMouseMouseReleased(event);
 				}
@@ -496,9 +635,11 @@ public class MouseClickWindow extends JFrame {
 		fc.showOpenDialog(this);
 		directory = fc.getSelectedFile();
 		directoryTree0 = null;
-		getJTree0();
+       
+		getJScrollPane0();
+
 	}
-	
+	//=====================================================
 	private static void installLnF() {
 		try {
 			String lnfClassname = PREFERRED_LOOK_AND_FEEL;
@@ -510,13 +651,69 @@ public class MouseClickWindow extends JFrame {
 					+ " on this platform:" + e.getMessage());
 		}
 	}
-	
+    
+    private String getImageHeight()
+    {
+        NumberFormat nm = NumberFormat.getNumberInstance();
+        nm.setMaximumFractionDigits(2);
+        return nm.format(imageHeight)+ " Pixels";
+
+    }
+    private String getImageWidth()
+    {
+        NumberFormat nm = NumberFormat.getNumberInstance();
+        nm.setMaximumFractionDigits(2);
+        return nm.format(imageWidth)+ " Pixels";
+    }
+    private void setImageHeight(double height)
+    {
+        this.imageHeight = height;
+    }
+    private void setImageWidth(double width)
+    {
+        this.imageWidth = width ;
+    }
+    private String getImageSize(long length)
+    {
+        length /=1024.00; //in KBytes
+        NumberFormat nm = NumberFormat.getNumberInstance();
+        return imageSize = nm.format(length)+" Kbytes";
+    }
+    private String getImageSizeString()
+    {
+        return imageSize;
+    }
+    private void setNewFile(File file)
+    {
+
+        String temp = file.getPath().substring(0,file.getPath().length()-4) + ".txt";
+        File tempFile = new File(temp);
+        if(tempFile.exists()){
+
+            this.newFile = false;
+        }
+        else{
+            this.newFile = true;
+        }
+    }
+    //======
+    private boolean isNewFile()
+    {
+        if ( this.newFile == true)
+            return true;
+        else
+            return false;
+    }
+
+	//===============================================================================
+
 	/**
 	 * Main entry of the class.
 	 * Note: This class is only created so that you can easily preview the result at runtime.
 	 * It is not expected to be managed by the designer.
 	 * You can modify it as you like.
 	 */
+    //==========
 	public static void main(String[] args) {
 		installLnF();
 		SwingUtilities.invokeLater(new Runnable() {
@@ -524,7 +721,7 @@ public class MouseClickWindow extends JFrame {
 			public void run() {			
 				MouseClickWindow frame = new MouseClickWindow();
 				frame.setDefaultCloseOperation(MouseClickWindow.EXIT_ON_CLOSE);
-				frame.setTitle("MouseClickWindow");
+				frame.setTitle("Mouse Click Recorder v" +ProgramVerisonID);
 				frame.getContentPane().setPreferredSize(frame.getSize());
 				frame.pack();
 				frame.setLocationRelativeTo(null);
@@ -533,14 +730,26 @@ public class MouseClickWindow extends JFrame {
 		});
 	}
 	//=========================================================================
-	private static boolean saveAnnotation(File directory, String fileName, int x, int y, String label){
+	private  boolean saveAnnotation(File directory, String fileName, int x, int y, String label){
         int extPos = fileName.lastIndexOf(".");
         String annotationFileName = fileName.substring(0,extPos+1) + "txt";
         File annotationsFile = new File(directory.getAbsolutePath()+System.getProperty("file.separator")+annotationFileName);
-        
+       
         try {
                 BufferedWriter bw = new BufferedWriter(new FileWriter(annotationsFile,true));
-                bw.write(x+"|"+y+"\t"+label+System.getProperty("line.separator"));
+                if (isNewFile())
+                {
+                    bw.write("=========================================" +System.getProperty("line.separator"));
+                    bw.write("'MouseClickRecorder' version: \t" +this.ProgramVerisonID +System.getProperty("line.separator"));
+                    bw.write("Image_filename:"+fileName +System.getProperty("line.separator"));
+                    bw.write("Image_height:" +getImageHeight()+System.getProperty("line.separator"));
+                    bw.write("Image_width:"+getImageWidth()+System.getProperty("line.separator"));
+                    bw.write("Image_file_size:" +getImageSizeString() +System.getProperty("line.separator"));
+                    bw.write("=========================================" +System.getProperty("line.separator"));
+                    bw.write("Row | Column\t" +"Comment" +System.getProperty("line.separator") );
+                    this.newFile = false;
+                }
+                bw.write(x+" | "+y+" \t"+label+System.getProperty("line.separator"));
                 bw.close();
                 
         }  catch (IOException e) {
@@ -548,7 +757,38 @@ public class MouseClickWindow extends JFrame {
         }
 
         return true;
+    }
+    //===
+    //Undo
+    //===
+    private void unDo(File directory, String fileName){
+
+    if(!this.isNewFile())
+    {
+        int extPos = fileName.lastIndexOf(".");
+        String annotationFileName = fileName.substring(0,extPos+1) + "txt";
+        File annotationsFile = new File(directory.getAbsolutePath()+System.getProperty("file.separator")+annotationFileName);
+
+            try {
+                BufferedReader in = new BufferedReader(new FileReader(annotationsFile));
+                ArrayList list = new ArrayList();
+                String line;
+                while ((line = in.readLine()) != null) {
+                list.add(line);
+                }
+                in.close();
+                list.remove(list.size()-1);
+                for(int i =0; i< list.size();i++)
+                {
+                System.out.println(list.get(i).toString());
+
+                }
+            }  catch (IOException e) {
+
+            }
+    }
 }
+
    //==========================================================================
 	private void openMenuItemMouseMouseReleased(MouseEvent event) {
 		openFileDialog();
@@ -556,42 +796,73 @@ public class MouseClickWindow extends JFrame {
 	
 
 	private void directoryTree0TreeSelectionValueChanged(TreeSelectionEvent event) {
-		filename = event.getPath().getLastPathComponent().toString();
-
+		
+        filename = event.getPath().getLastPathComponent().toString();
+        
 		if(filename != null) {
 			try {
-				
+
+                File file = new File(directory.getAbsolutePath() + System.getProperty("file.separator")+filename);
+                long length = file.length();
+                
+                
+                setNewFile(file);
 				System.out.println(directory.getAbsolutePath());
 				System.out.println("hello");
+                
 				ImageIcon i = new ImageIcon(directory.getAbsolutePath() + System.getProperty("file.separator")+filename);
 				
-				//scaling part of my code, feel free to remove if ya dont like it
+				//scaling (scales if image has height or width greater than 600
 				double height = i.getImage().getHeight(null);
-				double width = i.getImage().getWidth(null);
+                double width = i.getImage().getWidth(null);
+                setImageHeight(height);
+                setImageWidth(width);
+
+                         
 				double ratio = height/width;
-				i.setImage(i.getImage().getScaledInstance(600, (int)(600*ratio), Image.SCALE_FAST));
+                if (height > 600 || width > 600 )
+                {
+                    i.setImage(i.getImage().getScaledInstance(600, (int)(600*ratio), Image.SCALE_FAST));
+                }
 				//end scaling
-				
+                
 				this.imageLabel.setIcon(i);
-				getImageLabel().repaint();
-				getJSplitPane0().repaint();
-				repaint();
-			} catch (Exception e) {
-				// TODO Auto-generated catch blockkk
+				imageLabel.repaint();
+				
+
+
+                //add details to the details panel
+                jTextField1.setText(filename);
+                jTextField2.setText(getImageHeight());
+                jTextField3.setText(getImageWidth());
+                jTextField4.setText(getImageSize(length));
+
+                getDetailPanel().repaint();
+
+                repaint();
+                
+
+               // getCenterPanel().repaint();
+               // getDetailPanel().repaint();
+               // getJSplitPane0().repaint();
+                
+
+
+			}
+
+
+            catch (Exception e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+        
 		}
 	}
-
 	private void imageLabelMouseMouseReleased(MouseEvent event) {
 
         if( this.selectMode == 0)
         {
-            if(commenting) {
-                saveAnnotation(directory, filename, mouseCoords.x, mouseCoords.y, "");
-                mouseCoords = event.getPoint();
-                commenting = false;
-        	}
+           
             mouseCoords = event.getPoint();
             commenting = true;
             getCommentField().setText(COMMENT_PROMPT);
@@ -601,11 +872,10 @@ public class MouseClickWindow extends JFrame {
         }
         else if (this.selectMode == 1)
         {
-            if(commenting)
-
+            
             mouseCoords = event.getPoint();
+            //array.addMouseClick(directory, filename, mouseCoords.x, mouseCoords.y, commentField.getText() );
             saveAnnotation(directory, filename, mouseCoords.x, mouseCoords.y, getCommentField().getText());
-      
             
         }
 
@@ -614,7 +884,7 @@ public class MouseClickWindow extends JFrame {
 	
 	private class FileDirectoryAndImageFilter implements FilenameFilter{
 		private Hashtable filters;
-		private String[] imageExtentions = {"jpg", "png", "gif", "tif"};
+		private String[] imageExtentions = {"jpg", "png", "gif"};
 		FileDirectoryAndImageFilter(){
 			super();
 			filters = new Hashtable();
@@ -642,6 +912,10 @@ public class MouseClickWindow extends JFrame {
 			return (ext != null && filters.get(ext) != null ) ;
 		}
 	}
-}
+//========================================================================
 
+     
+//========================================================================
+
+}
 
