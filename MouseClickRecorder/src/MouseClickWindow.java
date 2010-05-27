@@ -28,6 +28,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
@@ -46,6 +47,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 //import java.util.ArrayList;
 
@@ -57,14 +59,15 @@ import java.util.Hashtable;
 public class MouseClickWindow extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-
+	private static String XMLFile = null;
+	private static HashMap<String,XML> fileHashMap;
     private static final double ProgramVerisonID = 1.1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JRadioButton jRadioButton1;
     private javax.swing.JRadioButton jRadioButton2;
-    private javax.swing.JCheckBox jCheckBox1;
+    private javax.swing.JButton jButton;
     private javax.swing.JCheckBox jCheckBox2;
     private javax.swing.JCheckBox jCheckBox3;
     private org.jdesktop.layout.GroupLayout jPanel1Layout;
@@ -75,7 +78,7 @@ public class MouseClickWindow extends JFrame {
     private double imageHeight;
     private double imageWidth;
     private String imageSize;
-
+    private static String authorName;
    
 
     private javax.swing.JLabel jLabel1;
@@ -107,9 +110,9 @@ public class MouseClickWindow extends JFrame {
 	private boolean commenting = false;
 	private Point mouseCoords;
 	private static final String COMMENT_PROMPT = "Enter a label or select another point";
-    private static final String COMMENT_PROMPT2 = "Enter a label first and click on the associated points";
-    private static final String COMMENT_PROMPT3 = "Enter a new label when done";
-    private static final String COMMENT_PROMPT4 = "Select a point on the screen";
+        private static final String COMMENT_PROMPT2 = "Enter a label first and click on the associated points";
+        private static final String COMMENT_PROMPT3 = "Enter a new label when done";
+        private static final String COMMENT_PROMPT4 = "Select a point on the screen";
 	private static final String PREFERRED_LOOK_AND_FEEL = "javax.swing.plaf.metal.MetalLookAndFeel";
 	public MouseClickWindow() {
 		initComponents();
@@ -307,7 +310,7 @@ public class MouseClickWindow extends JFrame {
         buttonGroup1 = new javax.swing.ButtonGroup();
         jRadioButton2 = new javax.swing.JRadioButton();
         jRadioButton1 = new javax.swing.JRadioButton();
-        jCheckBox1 = new javax.swing.JCheckBox();
+        jButton = new javax.swing.JButton();
         jCheckBox2 = new javax.swing.JCheckBox();
         jCheckBox3 = new javax.swing.JCheckBox();
         
@@ -316,7 +319,7 @@ public class MouseClickWindow extends JFrame {
 
         jRadioButton1.setText("Single");
         jRadioButton2.setText("Multiple");
-        jCheckBox1.setText("Show Points");
+        jButton.setText("Generate XML");
         jCheckBox2.setText("Show Comments");
         jCheckBox3.setText("Show Image Details");
         jRadioButton1.setSelected(true);
@@ -329,7 +332,8 @@ public class MouseClickWindow extends JFrame {
 
         //TODO : finish up the tasks for this buttons
         //for now they are invisible
-        jCheckBox1.setVisible(false);
+        // CHANGE THIS TO LABEL
+        jButton.setVisible(true);
         jCheckBox2.setVisible(false);
         
 
@@ -343,6 +347,14 @@ public class MouseClickWindow extends JFrame {
         jRadioButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 selectMode1(evt);
+            }
+        });
+         //===========
+
+        jButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+            	XML XMLObj =fileHashMap.get(XMLFile);
+            	XMLObj.generateXML();
             }
         });
         //===========
@@ -365,7 +377,7 @@ public class MouseClickWindow extends JFrame {
                 .add(jCheckBox3)
                 .addContainerGap(175, Short.MAX_VALUE)
                 
-                .add(jCheckBox1)
+                .add(jButton)
                 .add(18, 18, 18)
                 .add(jCheckBox2)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 19, Short.MAX_VALUE)
@@ -382,7 +394,7 @@ public class MouseClickWindow extends JFrame {
                 .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(jRadioButton2)
                     .add(jRadioButton1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 23, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(jCheckBox1)
+                    .add(jButton)
                     .add(jCheckBox2)
                     .add(jCheckBox3))
                 .addContainerGap())
@@ -472,6 +484,11 @@ public class MouseClickWindow extends JFrame {
 		return jSplitPane0;
         
 	}
+        private void generateXML(){
+             System.out.println("Button Pushed");
+             XML test = new XML();
+             test.generateXML();
+        }
 
     //left component
 	private JScrollPane getJScrollPane0() {
@@ -693,8 +710,25 @@ public class MouseClickWindow extends JFrame {
             this.newFile = false;
         }
         else{
+        	
             this.newFile = true;
         }
+       
+    }
+    private void setNewFileXML(File file)
+    {
+
+        String temp = file.getPath().substring(0,file.getPath().length()-4) + ".xml";
+        File tempFile = new File(temp);
+        if(tempFile.exists()){
+
+            this.newFile = false;
+        }
+        else{
+        	
+            this.newFile = true;
+        }
+       
     }
     //======
     private boolean isNewFile()
@@ -715,6 +749,25 @@ public class MouseClickWindow extends JFrame {
 	 */
     //==========
 	public static void main(String[] args) {
+		
+		authorName = (String)JOptionPane.showInputDialog(
+		                    null,
+		                    "Please Enter Your Name:",
+		                    "Your Name",
+		                    JOptionPane.PLAIN_MESSAGE);
+
+		//If a string was returned, say so.
+		while ((authorName != null) && (authorName.length() < 0)) {
+			authorName = (String)JOptionPane.showInputDialog(
+	                    null,
+	                    "Please Enter Your Name:",
+	                    "Your Name",
+	                    JOptionPane.PLAIN_MESSAGE);
+		}
+	
+		//If you're here, the return value was null/empty.
+		
+		fileHashMap = new HashMap<String,XML>();
 		installLnF();
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
@@ -733,10 +786,12 @@ public class MouseClickWindow extends JFrame {
 	private  boolean saveAnnotation(File directory, String fileName, int x, int y, String label){
         int extPos = fileName.lastIndexOf(".");
         String annotationFileName = fileName.substring(0,extPos+1) + "txt";
+        String XMLannotationFileName = fileName.substring(0,extPos+1) + "xml";
         File annotationsFile = new File(directory.getAbsolutePath()+System.getProperty("file.separator")+annotationFileName);
-       
+        File XMLannotationsFile = new File(directory.getAbsolutePath()+System.getProperty("file.separator")+XMLannotationFileName);
         try {
                 BufferedWriter bw = new BufferedWriter(new FileWriter(annotationsFile,true));
+               // BufferedWriter bwXML = new BufferedWriter(new FileWriter(annotationsFileXML,true));
                 if (isNewFile())
                 {
                     bw.write("=========================================" +System.getProperty("line.separator"));
@@ -748,9 +803,30 @@ public class MouseClickWindow extends JFrame {
                     bw.write("=========================================" +System.getProperty("line.separator"));
                     bw.write("Row | Column\t" +"Comment" +System.getProperty("line.separator") );
                     this.newFile = false;
+                     
+                } 
+                if (!fileHashMap.containsKey(annotationFileName)){
+                	XMLFile = annotationFileName;
+                	XML XMLObj = new XML();
+                	XMLObj.setFile(XMLannotationsFile);
+                	XMLObj.setTitle(fileName);
+                	XMLObj.setDirectory(directory.getAbsolutePath());
+                	XMLObj.setHight(getImageHeight());
+                	XMLObj.setSize(getImageSizeString());
+                	XMLObj.setWidth(getImageWidth());
+                	XMLObj.data("("+Integer.toString(x)+","+Integer.toString(y)+")",label);
+                	XMLObj.setAuthor(authorName);
+                	fileHashMap.put(annotationFileName, XMLObj);
+                	
+                }else{
+                	XMLFile = annotationFileName;
+                	XML XMLObj = fileHashMap.get(annotationFileName);
+                	XMLObj.data("("+Integer.toString(x)+","+Integer.toString(y)+")",label);
                 }
                 bw.write(x+" | "+y+" \t"+label+System.getProperty("line.separator"));
                 bw.close();
+               
+                
                 
         }  catch (IOException e) {
                 return false;
