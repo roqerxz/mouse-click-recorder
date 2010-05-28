@@ -76,6 +76,7 @@ public class XML {
 		dataSets.put(x, y);
 	}
     public void generateXML(){
+    	
         if (configFile == null){
            	JOptionPane.showMessageDialog(null,
            		    "No file has been selected.",
