@@ -353,8 +353,15 @@ public class MouseClickWindow extends JFrame {
 
         jButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-            	XML XMLObj =fileHashMap.get(XMLFile);
-            	XMLObj.generateXML();
+            	try{
+            		XML XMLObj =fileHashMap.get(XMLFile);
+            		XMLObj.generateXML();
+            	}catch(Exception e){
+            		JOptionPane.showMessageDialog(null,
+                   		    "No file has been selected.",
+                   		    "File Error",
+                   		    JOptionPane.ERROR_MESSAGE);
+            	}
             }
         });
         //===========
@@ -792,6 +799,15 @@ public class MouseClickWindow extends JFrame {
         try {
                 BufferedWriter bw = new BufferedWriter(new FileWriter(annotationsFile,true));
                // BufferedWriter bwXML = new BufferedWriter(new FileWriter(annotationsFileXML,true));
+                String Default = "Enter a label first and click on the associated points";
+                System.out.println(label);
+                while (label.equals(Default)){
+                	label = (String)JOptionPane.showInputDialog(
+    	                    null,
+    	                    "Please enter a label:",
+    	                    "Enter a label",
+    	                    JOptionPane.PLAIN_MESSAGE);
+                }
                 if (isNewFile())
                 {
                     bw.write("=========================================" +System.getProperty("line.separator"));
